@@ -1,4 +1,4 @@
-# Placeholder for README.md# 💣 Explosion LORA Project
+# 💣 Explosion LORA Project
 
 This repo documents a hands-on journey into training a custom LoRA (Low-Rank Adaptation) for explosions, using ComfyUI with SDXL and Flux models, plus custom enhancement nodes built from scratch.
 
@@ -54,6 +54,31 @@ We're bypassing GUI tools like `kohya_ss` for full control.
 
 ---
 
+## 🧾 Dataset Creation Guidelines
+
+### 📏 Resolution Tips
+- **Generate high-res images** (e.g. 2048x2048) to retain visual clarity
+- **Crop or resize** to 1024x1024 (or 896x896) for training — especially for SDXL
+- Use full-res versions for showcasing or post-training super-resolution
+
+### 🎨 Diversity for Smarter Models
+Introduce variety in:
+- **Composition**: close-ups, wide shots, centered, off-angle
+- **Lighting**: natural, cinematic, backlit, moody
+- **Color grading**: warm explosions, cool explosions, desaturated
+- **Environment**: explosions in urban, forest, desert, water, sci-fi
+- **Style**: hyperrealistic, painterly, vintage, surreal
+
+### 📱 Vertical Framing Consideration
+For social platforms (Instagram, TikTok, etc.):
+- 9:16 aspect ratio (e.g. 1056x1888) looks great on mobile
+- Nodes like *Flux Resolution Calc* can assist with intelligent cropping
+- Output at 2K and downscale to 9:16 as needed for punchy visuals
+
+The goal is to capture the aesthetic *and* functional diversity that teaches your model how to generalize — not just memorize.
+
+---
+
 ## 👤 Author
 Created by [jerms-ai](https://github.com/jerms-ai)
 
@@ -65,4 +90,3 @@ Project purpose: To create powerful aesthetic datasets, learn fine-tuning techni
 Coming soon...
 
 Want to contribute or follow along? Watch this space — or fork and start enhancing your own images!
-
