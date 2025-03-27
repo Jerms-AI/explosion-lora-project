@@ -1,0 +1,3 @@
+# 📓 Developer Notes
+
+This document captures the evolution of our development cycle...

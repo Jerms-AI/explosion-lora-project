@@ -1,0 +1,3 @@
+# ✅ How to Test Nodes
+
+A checklist and explanation of how we test before pushing...
