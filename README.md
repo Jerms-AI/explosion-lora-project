@@ -1,6 +1,6 @@
 # 💣 Explosion LORA Project
 
-This repo documents a hands-on journey into training a custom LoRA (Low-Rank Adaptation) for explosions, using ComfyUI with SDXL and Flux models, plus custom enhancement nodes built from scratch.
+This repo documents a hands-on journey into training a custom LoRA (Low-Rank Adaptation) for explosions, using ComfyUI with a **creatively merged SDXL model** and Flux models, plus custom enhancement nodes built from scratch.
 
 ---
 
@@ -29,7 +29,13 @@ explosion-lora-project/
 We’re extending ComfyUI with simple but powerful image processing tools. Currently includes:
 
 ### 🔹 [Enhance Detail Node](custom_nodes/image_manipulation_tools/README.md)
-> Boost image detail using OpenCV's `detailEnhance`. Tweak contrast, texture, and clarity before dataset generation or final renders.
+Boost image detail using OpenCV’s `detailEnhance`.  
+This node:
+- Handles both NumPy arrays and PyTorch tensors
+- Outputs a tensor for seamless ComfyUI integration
+- Lets you tweak `detail_strength` and `smoothness` to control clarity and texture
+
+Use it before training LoRA datasets or final renders to sharpen image fidelity.
 
 More nodes coming soon (contrast, blur, mask tweaks, etc). Each one will live in its own modular Python file with docs.
 
@@ -38,7 +44,7 @@ More nodes coming soon (contrast, blur, mask tweaks, etc). Each one will live in
 ## 🧪 Dataset Creation Workflows
 
 Inside `comfyui_workflows/explosion_generation.json`, you'll find a node-based image creation pipeline combining:
-- SDXL + Flux fusion
+- A creatively merged SDXL model + Flux fusion
 - Custom enhancement passes
 - High-quality explosion image generation
 
@@ -90,3 +96,4 @@ Project purpose: To create powerful aesthetic datasets, learn fine-tuning techni
 Coming soon...
 
 Want to contribute or follow along? Watch this space — or fork and start enhancing your own images!
+
