@@ -5,7 +5,7 @@ from .footer_text_overlay import FooterTextOverlay
 NODE_CLASS_MAPPINGS = {
     "ParameterSweep": ParameterSweep,
     "ReloadCustomNodes": ReloadCustomNodes,
-     "FooterTextOverlay": FooterTextOverlay,
+    "FooterTextOverlay": FooterTextOverlay,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

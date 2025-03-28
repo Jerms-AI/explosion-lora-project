@@ -1,55 +1,79 @@
-import torch
+import sys
+import os
+
+# Add the full shared_utils path directly to sys.path
+SHARED_UTILS_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "shared_utils")
+)
+
+if SHARED_UTILS_PATH not in sys.path:
+    sys.path.insert(0, SHARED_UTILS_PATH)
+
+from image_utils import ensure_numpy, numpy_to_pil, pil_to_tensor
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-import cv2
+
 
 class FooterTextOverlay:
+    def __init__(self):
+        # System font (cross-platform fallback)
+        self.font_path = "arial.ttf"
+        self.font_size = 24
+        self.padding_top = 20
+        self.padding_bottom = 20
+        self.padding_sides = 10
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "image": ("IMAGE",),
-                "text": ("STRING", {
-                    "default": "Sample Text",
-                }),
-                "footer_height": ("INT", {"default": 40, "min": 10, "max": 512}),
-                "font_size": ("INT", {"default": 24, "min": 10, "max": 256}),
-            }
+                "text": ("STRING", {"multiline": True}),
+            },
         }
 
     RETURN_TYPES = ("IMAGE",)
-    FUNCTION = "draw_footer"
-    CATEGORY = "image/overlay"
+    FUNCTION = "add_footer"
+    CATEGORY = "image/text"
 
-    def draw_footer(self, image, text, footer_height, font_size):
-        results = []
+    def add_footer(self, image, text):
+        image = numpy_to_pil(ensure_numpy(image))
+        try:
+            font = ImageFont.truetype(self.font_path, self.font_size)
+        except OSError:
+            font = ImageFont.load_default()
 
-        for img in image:
-            # Ensure we're working with a NumPy array in uint8 format
-            if isinstance(img, torch.Tensor):
-                img = img.cpu().numpy()
-            img_np = (img * 255).clip(0, 255).astype(np.uint8)
+        draw = ImageDraw.Draw(image)
+        max_text_width = image.width - (2 * self.padding_sides)
 
-            h, w, _ = img_np.shape
-            new_h = h + footer_height
+        # Manual text wrap
+        words = text.split()
+        lines = []
+        current_line = ""
+        for word in words:
+            test_line = f"{current_line} {word}".strip()
+            if draw.textlength(test_line, font=font) <= max_text_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
 
-            # Create new image with space for footer
-            output = np.zeros((new_h, w, 3), dtype=np.uint8)
-            output[:h, :, :] = img_np
+        line_height = font.getbbox("A")[3] - font.getbbox("A")[1]
+        text_height = len(lines) * line_height
+        footer_height = text_height + self.padding_top + self.padding_bottom
 
-            # Draw black footer
-            cv2.rectangle(output, (0, h), (w, new_h), (0, 0, 0), -1)
+        footer = Image.new("RGBA", (image.width, footer_height), (0, 0, 0, 255))
+        footer_draw = ImageDraw.Draw(footer)
 
-            # Put white text in the center
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            text_size, _ = cv2.getTextSize(text, font, 1, 2)
-            text_width = text_size[0]
+        y = self.padding_top
+        for line in lines:
+            footer_draw.text((self.padding_sides, y), line, font=font, fill=(255, 255, 255, 255))
+            y += line_height
 
-            text_x = max(10, (w - text_width) // 2)
-            text_y = h + (footer_height // 2) + (font_size // 2) - 5
+        combined = Image.new("RGBA", (image.width, image.height + footer.height))
+        combined.paste(image, (0, 0))
+        combined.paste(footer, (0, image.height))
 
-            cv2.putText(output, text, (text_x, text_y), font, font_size / 32.0, (255, 255, 255), 2, cv2.LINE_AA)
-
-            # Normalize back to float32 for ComfyUI
-            results.append(output.astype(np.float32) / 255.0)
-
-        return (torch.tensor(np.stack(results)),)
+        return (pil_to_tensor(combined),)
