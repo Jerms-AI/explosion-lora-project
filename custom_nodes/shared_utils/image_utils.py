@@ -39,4 +39,5 @@ def pil_to_numpy(image):
 
 def pil_to_tensor(image):
     """Convert PIL image to PyTorch tensor scaled to [0, 1]."""
-    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).permute(2, 0, 1)
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).permute(2, 0, 1).unsqueeze(0)
+
